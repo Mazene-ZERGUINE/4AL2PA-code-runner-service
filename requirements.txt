@@ -1,0 +1,4 @@
+djangorestframework
+celery
+django-celery-results
+flower
