@@ -8,12 +8,18 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
+    services:
+      rabbitmq:
+        image: rabbitmq:3.8-management
+        ports:
+          - 5672:5672
+          - 15672:15672
+
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.11, 3.12] 
+        python-version: [3.11, 3.12]
 
     steps:
     - uses: actions/checkout@v4
@@ -26,5 +32,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
     - name: Run Tests
+      env:
+        CELERY_BROKER_URL: amqp://guest:guest@rabbitmq:5672//
       run: |
         pytest
