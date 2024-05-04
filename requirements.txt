@@ -3,3 +3,6 @@ celery~=5.4.0
 django-celery-results
 flower
 Django~=5.0.4
+pytest
+pytest-django
+pytest-celery
