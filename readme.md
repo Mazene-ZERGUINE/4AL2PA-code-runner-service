@@ -5,7 +5,7 @@ This Django project demonstrates the integration of Django REST Framework for AP
 
 ## Prerequisites
 
-- Python 3.8 or higher
+- Python 3.10 or higher
 - pip
 - RabbitMQ server or Docker container
 
