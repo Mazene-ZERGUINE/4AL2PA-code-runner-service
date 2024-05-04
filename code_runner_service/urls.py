@@ -21,6 +21,6 @@ from api.views import AddTask, GetTaskResult
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('add/', AddTask.as_view(), name='add_task'),
+    path('execute/', AddTask.as_view(), name='execute_task'),
     path('result/<str:task_id>/', GetTaskResult.as_view(), name='task_result'),
 ]

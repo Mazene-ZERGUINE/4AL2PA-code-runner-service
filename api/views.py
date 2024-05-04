@@ -1,20 +1,22 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .tasks import add
+from .tasks import run_code
 from celery.result import AsyncResult
-from django_celery_results.models import TaskResult
+
+from .utils import clean_tmp_directory
 
 
 class AddTask(APIView):
     def post(self, request):
-        x = request.data.get('x')
-        y = request.data.get('y')
-        if x is not None and y is not None:
-            task = add.delay(int(x), int(y))
-            return Response({'task_id': task.id}, status=status.HTTP_202_ACCEPTED)
+        clean_tmp_directory()
+        programming_language = request.data['programming_language']
+        source_code = request.data['source_code']
+        if programming_language is not None and source_code is not None:
+            task = run_code.delay(source_code, programming_language)
+            return Response({'task_id': task.id}, status=status.HTTP_200_OK)
         else:
-            return Response({'error': 'Missing x or y parameters'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Missing  parameters'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class GetTaskResult(APIView):
