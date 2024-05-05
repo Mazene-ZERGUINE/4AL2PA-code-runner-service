@@ -78,7 +78,13 @@ python manage.py migrate django_celery_results
 python manage.py migrate
 ```
 
-### 6. Start the Celery Worker
+### 6. Build code execution container
+
+```bash
+docker build -t code_runner:latest .
+```
+
+### 7. Start the Celery Worker
 
 Start the Celery worker to process tasks:
 
@@ -86,7 +92,7 @@ Start the Celery worker to process tasks:
 celery -A code_runner_service worker --loglevel=info
 ```
 
-### 7. Start the Development Server
+### 8. Start the Development Server
 
 Start the Django development server:
 
@@ -94,7 +100,7 @@ Start the Django development server:
 python manage.py runserver
 ```
 
-### 8. Monitor Celery (Optional)
+### 9. Monitor Celery (Optional)
 
 Start Flower to monitor Celery tasks:
 
