@@ -1,6 +1,6 @@
 import os
 from django.conf import settings
-
+from enum import Enum
 
 def clean_tmp_directory():
     tmp_dir_path = os.path.join(settings.BASE_DIR, 'tmp')
@@ -13,3 +13,8 @@ def clean_tmp_directory():
         return f"Deleted {file_count} files from the tmp directory."
     else:
         return f"Total files in tmp directory: {file_count}. No deletion performed."
+
+
+class ProgramingLanguagesEnum(Enum):
+    JAVASCRIPT = 'javascript',
+    PYTHON = 'python',

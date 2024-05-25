@@ -16,8 +16,8 @@ This Django project demonstrates the integration of Django REST Framework for AP
 Clone the repository to your local machine:
 
 ```bash
-git clone git@github.com:Mazene-ZERGUINE/4AL2PA-code-runner-service.git
-cd code-runner-service
+git clone git@github.com:Mazene-ZERGUINE/4AL2PA-resources-runner-service.git
+cd resources-runner-service
 ```
 
 ### 2. Setup the Virtual Environment
@@ -26,7 +26,7 @@ Create and activate a virtual environment:
 
 ```bash
 python3 -m venv venv
-source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+source venv/resources/activate  # On Windows use `venv\Scripts\activate`
 ```
 
 ### 3. Install Dependencies

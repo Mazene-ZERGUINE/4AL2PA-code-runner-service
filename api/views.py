@@ -9,11 +9,12 @@ from .utils import clean_tmp_directory
 
 class AddTask(APIView):
     def post(self, request):
-        clean_tmp_directory()
+        # clean_tmp_directory()
         programming_language = request.data['programming_language']
         source_code = request.data['source_code']
         if programming_language is not None and source_code is not None:
             task = run_code.delay(source_code, programming_language)
+
             return Response({'task_id': task.id}, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'Missing  parameters'}, status=status.HTTP_400_BAD_REQUEST)
