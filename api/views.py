@@ -4,9 +4,6 @@ from rest_framework.views import APIView
 from .tasks import run_code
 from celery.result import AsyncResult
 
-from .utils import clean_tmp_directory
-
-
 class AddTask(APIView):
     def post(self, request):
         # clean_tmp_directory()

@@ -4,6 +4,7 @@ import uuid
 import os
 from celery.utils.log import get_task_logger
 from code_runner_service import settings
+from .utils import ProgramingLanguagesEnum, ProgramResultDto
 
 DIR_PATH = os.path.join(settings.BASE_DIR, 'resources')
 VENV_PATH = '/app/.venv/bin/python'
@@ -27,23 +28,19 @@ def run_code(source_code, programming_language):
     with open(temp_filename, 'w') as f:
         f.write(source_code)
 
-    if programming_language == 'python':
+    if programming_language == ProgramingLanguagesEnum.PYTHON.value:
         cmd = ['docker', 'run', '--rm', '-v', f'{DIR_PATH}:/app/resources', 'code_runner:latest', VENV_PATH, container_path]
-    elif programming_language == 'javascript':
+    elif programming_language == ProgramingLanguagesEnum.JAVASCRIPT.value:
         cmd = ['docker', 'run', '--rm', '-v', f'{DIR_PATH}:/app/resources', 'code_runner:latest', 'node', container_path]
-    elif programming_language == 'php':
+    elif programming_language == ProgramingLanguagesEnum.PHP.value:
         cmd = ['docker', 'run', '--rm', '-v', f'{DIR_PATH}:/app/resources', 'code_runner:latest', 'php', '-r', f'require "{PHP_AUTOLOAD_PATH}"; include "{container_path}";']
-    elif programming_language == 'c++':
+    elif programming_language == ProgramingLanguagesEnum.CPP.value:
         compiled_path = f'/app/resources/{programming_language}/compiled_{unique_id}'
         cmd = ['docker', 'run', '--rm', '-v', f'{DIR_PATH}:/app/resources', 'code_runner:latest', 'g++', container_path, '-o', compiled_path]
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
         if result.returncode != 0:
             logger.error(f'Error compiling C++ code: {result.stderr}')
-            return {
-                'stdout': result.stdout,
-                'stderr': result.stderr,
-                'returncode': result.returncode
-            }
+            return ProgramResultDto(result.stdout, result.stderr, result.returncode).to_dict()
         cmd = ['docker', 'run', '--rm', '-v', f'{DIR_PATH}:/app/resources', 'code_runner:latest', compiled_path]
     else:
         logger.error(f'Unsupported programming language: {programming_language}')
@@ -53,11 +50,7 @@ def run_code(source_code, programming_language):
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
         logger.info(f'Execution result for {programming_language} code: {result}')
 
-        return {
-            'stdout': result.stdout,
-            'stderr': result.stderr,
-            'returncode': result.returncode
-        }
+        return ProgramResultDto(result.stdout, result.stderr, result.returncode).to_dict()
     except subprocess.TimeoutExpired:
         logger.error(f'Execution time exceeded the limit for {programming_language} code')
         return {'error': 'Execution time exceeded the limit'}
