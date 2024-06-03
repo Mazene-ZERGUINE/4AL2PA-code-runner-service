@@ -81,7 +81,7 @@ def run_code(source_code, programming_language):
 
 
 @shared_task
-def execute_code_with_file(source_code, programming_language, source_file):
+def execute_code_with_file(source_code, programming_language, source_file, file_output_fromat):
     unique_id = uuid.uuid4()
     extension = {
         'python': 'py',
@@ -92,11 +92,12 @@ def execute_code_with_file(source_code, programming_language, source_file):
 
     temp_code_filename = os.path.join(DIR_PATH, f'{programming_language}/code_to_run_{unique_id}.{extension}')
     temp_output_dir = os.path.join(DIR_PATH, 'out')
-    temp_output_filename = os.path.join(temp_output_dir, f'output_file_{unique_id}.txt')
+    temp_output_filename = os.path.join(temp_output_dir, f'output_file_{unique_id}.{file_output_fromat}')
+
 
     container_code_path = f'/app/resources/{programming_language}/code_to_run_{unique_id}.{extension}'
     container_input_path = f'/app/resources/{programming_language}/input_file_{unique_id}.txt'
-    container_output_path = f'/app/resources/out/output_file_{unique_id}.txt'
+    container_output_path = f'/app/resources/out/output_file_{unique_id}.{file_output_fromat}'
 
     os.makedirs(os.path.dirname(temp_code_filename), exist_ok=True)
     os.makedirs(temp_output_dir, exist_ok=True)
@@ -138,10 +139,10 @@ def execute_code_with_file(source_code, programming_language, source_file):
         logger.info(f'Execution result for {programming_language} code: {result}')
         logger.info(f'Checking if output file exists: {os.path.exists(temp_output_filename)}')
 
-        # Check if the output file exists before generating the output_file_path
         if os.path.exists(temp_output_filename):
             output_filename = temp_output_filename.split('/')[-1]
-            output_file_path = STATIC_FILES_URL + output_filename
+
+            output_file_path = STATIC_FILES_URL + output_filename.replace('txt', file_output_fromat)
         else:
             output_file_path = None
 

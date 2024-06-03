@@ -33,6 +33,7 @@ class AddTaskWithFile(APIView):
         programming_language = request.data['programming_language']
         source_code = request.data['source_code']
         file_paths = request.data['file_paths']
+        file_output_fromat = request.data['file_output_fromat']
 
         input_file_url = file_paths['input_file_path']
         try:
@@ -50,7 +51,7 @@ class AddTaskWithFile(APIView):
             return Response({'error': 'Failed to save the file: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         try:
-            task = execute_code_with_file.delay(source_code, programming_language, tmp_file_path)
+            task = execute_code_with_file.delay(source_code, programming_language, tmp_file_path, file_output_fromat)
         except Exception as e:
             return Response({'error': 'Failed to create task: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
