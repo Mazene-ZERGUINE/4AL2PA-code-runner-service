@@ -5,8 +5,13 @@ import requests
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from code_runner_service import settings
 from .tasks import run_code, execute_code_with_file
 from celery.result import AsyncResult
+from .utils import FileDeletedResponseDto
+
+OUT_FILE_DIR = os.path.join(settings.BASE_DIR, 'resources/out/')
 
 class AddTask(APIView):
     def post(self, request):
@@ -56,3 +61,19 @@ class AddTaskWithFile(APIView):
             return Response({'error': 'Failed to create task: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response({'task_id': task.id, 'status': 'Task created successfully'}, status=status.HTTP_200_OK)
+
+
+class DeleteOutputFile(APIView):
+    def delete(self, request):
+        filename = request.query_params.get('file')
+        file_path = OUT_FILE_DIR  + filename
+        print(file_path)
+        if not file_path:
+            return Response({"error": "No file path provided"}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            try:
+                os.remove(file_path)
+                response = FileDeletedResponseDto(200, "file deleted successfully", True).to_dict()
+                return Response(response, status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

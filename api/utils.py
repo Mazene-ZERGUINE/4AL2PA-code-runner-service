@@ -36,3 +36,17 @@ class ProgramWithFileResultDto:
             'returncode': self.returncode,
             'output_file_path': self.output_file_path
         }
+
+class FileDeletedResponseDto:
+    def __init__(self, response_status, message, success):
+        self.response_status = response_status
+        self.message = message
+        self.success = success
+
+
+    def to_dict(self):
+        return {
+            'status': self.response_status,
+            'message': self.message,
+            'success': self.success
+        }

@@ -19,13 +19,14 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
 
-from api.views import AddTask, GetTaskResult, AddTaskWithFile
+from api.views import AddTask, GetTaskResult, AddTaskWithFile, DeleteOutputFile
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('execute/', AddTask.as_view(), name='execute_task'),
     path('result/<str:task_id>/', GetTaskResult.as_view(), name='task_result'),
-    path('file/execute', AddTaskWithFile.as_view(), name='execute_task_with_file')
+    path('file/execute', AddTaskWithFile.as_view(), name='execute_task_with_file'),
+    path('file/delete', DeleteOutputFile.as_view(), name='delete-output-file'),
 ]
 
 

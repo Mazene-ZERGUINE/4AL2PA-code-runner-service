@@ -94,7 +94,6 @@ def execute_code_with_file(source_code, programming_language, source_file, file_
     temp_output_dir = os.path.join(DIR_PATH, 'out')
     temp_output_filename = os.path.join(temp_output_dir, f'output_file_{unique_id}.{file_output_fromat}')
 
-
     container_code_path = f'/app/resources/{programming_language}/code_to_run_{unique_id}.{extension}'
     container_input_path = f'/app/resources/{programming_language}/input_file_{unique_id}.txt'
     container_output_path = f'/app/resources/out/output_file_{unique_id}.{file_output_fromat}'
