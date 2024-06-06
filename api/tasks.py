@@ -14,8 +14,9 @@ PHP_AUTOLOAD_PATH = os.getenv('PHP_AUTOLOAD_PATH', '/app/resources/php/vendor/au
 logger = get_task_logger(__name__)
 
 
-# todo: dynamic prod and dev environments configurations
-ENV = "dev" # temporary configrations
+ENV = os.getenv('ENV', 'dev')
+STATIC_FILES_URL = "http://127.0.0.1:8080/static/" if ENV == "dev" else "http://prod_domain/static/"
+
 
 STATIC_FILES_URL = ""
 if ENV == "dev":
