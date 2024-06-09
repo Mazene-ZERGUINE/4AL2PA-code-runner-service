@@ -34,7 +34,7 @@ class ProgramWithFileResultDto:
             'stdout': self.stdout,
             'stderr': self.stderr,
             'returncode': self.returncode,
-            'output_file_path': self.output_file_path
+            'output_file_paths': self.output_file_path
         }
 
 class FileDeletedResponseDto:

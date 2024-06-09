@@ -97,7 +97,7 @@ celery -A code_runner_service worker --loglevel=info
 Start the Django development server:
 
 ```bash
-python manage.py runserver
+export ENV=dev; python manage.py runserver 8080
 ```
 
 ### 9. Monitor Celery (Optional)
