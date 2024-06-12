@@ -111,12 +111,13 @@ def execute_code_with_files(source_code, programming_language, source_files, out
                 input_file.write(src_file.read())
         source_code = source_code.replace(f'INPUT_FILE_PATH_{idx}', f"'{container_input_path}'")
 
-    # Prepare output files
+    # Prepare output files if output_files_formats is not empty or null
     output_file_paths = []
-    for idx, file_output_format in enumerate(output_files_formats):
-        container_output_path = f'/app/resources/out/output_file_{unique_id}_{idx}.{file_output_format}'
-        output_file_paths.append(container_output_path)
-        source_code = source_code.replace(f'OUTPUT_FILE_PATH_{idx}', f"'{container_output_path}'")
+    if output_files_formats:
+        for idx, file_output_format in enumerate(output_files_formats):
+            container_output_path = f'/app/resources/out/output_file_{unique_id}_{idx}.{file_output_format}'
+            output_file_paths.append(container_output_path)
+            source_code = source_code.replace(f'OUTPUT_FILE_PATH_{idx}', f"'{container_output_path}'")
 
     with open(temp_code_filename, 'w') as f:
         f.write(source_code)
@@ -142,21 +143,23 @@ def execute_code_with_files(source_code, programming_language, source_files, out
     else:
         logger.error(f'Unsupported programming language: {programming_language}')
         return {'error': 'Unsupported programming language'}
+
     try:
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
         logger.info(f'Execution result for {programming_language} code: {result}')
 
         output_paths = []
-        for path in output_file_paths:
-            filename = path.split('/')[-1]
-            local_path = OUT_DIR + filename
-            logger.error(local_path)
-            if os.path.exists(local_path):
-                output_filename = os.path.basename(local_path)
-                output_url = STATIC_FILES_URL + output_filename
-                output_paths.append(output_url)
-            else:
-                logger.warning(f'Output file not found: {local_path}')
+        if output_file_paths:  # Check if there are output files to process
+            for path in output_file_paths:
+                filename = path.split('/')[-1]
+                local_path = OUT_DIR + filename
+                logger.error(local_path)
+                if os.path.exists(local_path):
+                    output_filename = os.path.basename(local_path)
+                    output_url = STATIC_FILES_URL + output_filename
+                    output_paths.append(output_url)
+                else:
+                    logger.warning(f'Output file not found: {local_path}')
 
         return ProgramWithFileResultDto(result.stdout, result.stderr, result.returncode, output_paths).to_dict()
     except subprocess.TimeoutExpired:
@@ -173,3 +176,4 @@ def execute_code_with_files(source_code, programming_language, source_files, out
             logger.error(input_file_path)
             if os.path.exists(input_file_path):
                 os.remove(input_file_path)
+

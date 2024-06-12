@@ -40,7 +40,7 @@ class AddTaskWithFile(APIView):
         input_files_paths = request.data.get('input_files_paths', [])
         output_files_formats = request.data.get('output_files_formats', [])
 
-        if not programming_language or not source_code or not input_files_paths or not output_files_formats:
+        if not programming_language or not source_code or not input_files_paths:
             return Response({'error': 'Missing parameters'}, status=status.HTTP_400_BAD_REQUEST)
 
         tmp_file_paths = []
@@ -66,7 +66,6 @@ class AddTaskWithFile(APIView):
             return Response({'error': 'Failed to create task: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response({'task_id': task.id, 'status': 'Task created successfully'}, status=status.HTTP_200_OK)
-
 
 class DeleteOutputFile(APIView):
     def delete(self, request):
