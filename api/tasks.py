@@ -1,4 +1,3 @@
-import tempfile
 from celery import shared_task
 import subprocess
 import uuid
@@ -16,6 +15,7 @@ OUT_DIR = os.path.join(DIR_PATH, 'out/')
 ENV = os.getenv('ENV', 'dev')
 STATIC_FILES_URL = "http://127.0.0.1:8080/static/" if ENV == "dev" else "http://prod_domain/static/"
 
+
 def run_docker_command(cmd):
     try:
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
@@ -29,6 +29,7 @@ def run_docker_command(cmd):
     except Exception as e:
         logger.error(f'Unexpected error: {str(e)}')
         return {'error': 'Unexpected error occurred'}
+
 
 def get_docker_run_command(language, container_path, unique_id):
     common_args = [
@@ -55,6 +56,7 @@ def get_docker_run_command(language, container_path, unique_id):
         logger.error(f'Unsupported programming language: {language}')
         return None
 
+
 @shared_task
 def run_code(source_code, programming_language):
     unique_id = uuid.uuid4()
@@ -76,6 +78,7 @@ def run_code(source_code, programming_language):
         os.remove(temp_filename)
 
     return ProgramResultDto(result.stdout, result.stderr, result.returncode).to_dict() if isinstance(result, subprocess.CompletedProcess) else result
+
 
 @shared_task
 def execute_code_with_files(source_code, programming_language, source_files, output_files_formats):
