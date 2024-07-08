@@ -4,4 +4,4 @@ export DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1
 export DJANGO_CELERY_BROKER_URL=amqp://localhost
 
 
-# run process here
+# run process for prod env here

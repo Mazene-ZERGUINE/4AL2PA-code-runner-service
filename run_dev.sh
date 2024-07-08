@@ -5,3 +5,9 @@ export DJANGO_CELERY_BROKER_URL=amqp://localhost
 
 
 # run process here
+
+source ./venve/bin/active
+
+pip install -r ./requirements.txt
+
+python manage.py runserver 8080
