@@ -40,7 +40,7 @@ class AddTaskWithFile(APIView):
         input_files_paths = request.data.get('input_files_paths', [])
         output_files_formats = request.data.get('output_files_formats', [])
 
-        if not programming_language or not source_code or not input_files_paths:
+        if not programming_language or not source_code:
             return Response({'error': 'Missing parameters'}, status=status.HTTP_400_BAD_REQUEST)
 
         tmp_file_paths = []
