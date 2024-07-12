@@ -6,3 +6,5 @@ Django~=5.0.4
 pytest
 pytest-django
 pytest-celery
+boto3
+ python-dotenv

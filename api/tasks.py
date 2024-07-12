@@ -3,18 +3,54 @@ import subprocess
 import uuid
 import os
 from celery.utils.log import get_task_logger
+import boto3
+from botocore.exceptions import NoCredentialsError
 from code_runner_service import settings
 from .utils import ProgramingLanguagesEnum, ProgramResultDto, ProgramWithFileResultDto
+
+from dotenv import load_dotenv
+load_dotenv()
+
 
 DIR_PATH = os.path.join(settings.BASE_DIR, 'resources')
 VENV_PATH = '/app/.venv/bin/python'
 PHP_AUTOLOAD_PATH = os.getenv('PHP_AUTOLOAD_PATH', '/app/resources/php/vendor/autoload.php')
 logger = get_task_logger(__name__)
-OUT_DIR = os.path.join(DIR_PATH, 'out/')
 
 ENV = os.getenv('ENV', 'dev')
 STATIC_FILES_URL = "http://127.0.0.1:8080/static/" if ENV == "dev" else "http://prod_domain/static/"
 
+# S3 Configuration
+S3_BUCKET_NAME = os.getenv('S3_BUCKET_NAME')
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+S3_REGION_NAME = os.getenv('S3_REGION_NAME')
+
+
+
+s3_client = boto3.client(
+    's3',
+    aws_access_key_id=AWS_ACCESS_KEY_ID,
+    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+    region_name=S3_REGION_NAME
+)
+def upload_file_to_s3(file_path, s3_bucket, s3_key):
+
+    logger.error(f"S3_BUCKET_NAME: {S3_BUCKET_NAME}")
+    logger.error(f"AWS_ACCESS_KEY_ID: {AWS_ACCESS_KEY_ID}")
+    logger.error(f"AWS_SECRET_ACCESS_KEY: {AWS_SECRET_ACCESS_KEY}")
+    logger.error(f"S3_REGION_NAME: {S3_REGION_NAME}")
+    logger.error(f"ENV: {ENV}")
+    try:
+        s3_client.upload_file(file_path, s3_bucket, s3_key)
+        s3_url = f"https://{s3_bucket}.s3.{S3_REGION_NAME}.amazonaws.com/{s3_key}"
+        return s3_url
+    except FileNotFoundError:
+        logger.error(f'File not found: {file_path}')
+        return None
+    except NoCredentialsError:
+        logger.error('AWS credentials not available')
+        return None
 
 def run_docker_command(cmd):
     try:
@@ -29,7 +65,6 @@ def run_docker_command(cmd):
     except Exception as e:
         logger.error(f'Unexpected error: {str(e)}')
         return {'error': 'Unexpected error occurred'}
-
 
 def get_docker_run_command(language, container_path, unique_id):
     common_args = [
@@ -56,7 +91,6 @@ def get_docker_run_command(language, container_path, unique_id):
         logger.error(f'Unsupported programming language: {language}')
         return None
 
-
 @shared_task
 def run_code(source_code, programming_language):
     unique_id = uuid.uuid4()
@@ -78,7 +112,6 @@ def run_code(source_code, programming_language):
         os.remove(temp_filename)
 
     return ProgramResultDto(result.stdout, result.stderr, result.returncode).to_dict() if isinstance(result, subprocess.CompletedProcess) else result
-
 
 @shared_task
 def execute_code_with_files(source_code, programming_language, source_files, output_files_formats):
@@ -123,12 +156,14 @@ def execute_code_with_files(source_code, programming_language, source_files, out
     if output_file_paths:
         for path in output_file_paths:
             filename = path.split('/')[-1]
-            local_path = OUT_DIR + filename
+            local_path = os.path.join(DIR_PATH, 'out', filename)
             logger.error(local_path)
             if os.path.exists(local_path):
-                output_filename = os.path.basename(local_path)
-                output_url = STATIC_FILES_URL + output_filename
-                output_paths.append(output_url)
+                s3_key = f'{unique_id}/out/{filename}'
+                s3_url = upload_file_to_s3(local_path, S3_BUCKET_NAME, s3_key)
+                if s3_url:
+                    output_paths.append(s3_url)
+                os.remove(local_path)
             else:
                 logger.warning(f'Output file not found: {local_path}')
 

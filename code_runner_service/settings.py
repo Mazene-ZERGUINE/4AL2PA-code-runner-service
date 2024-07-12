@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,6 +31,7 @@ DEBUG = os.environ.get('DJANGO_DEBUG')
 ALLOWED_HOSTS = [
     '127.0.0.1'
 ]
+
 
 # Application definition
 
@@ -56,6 +60,12 @@ MIDDLEWARE = [
 
 CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL')
 CELERY_RESULT_BACKEND = 'django-db'
+
+
+S3_BUCKET_NAME = os.getenv('S3_BUCKET_NAME')
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+S3_REGION_NAME = os.getenv('S3_REGION_NAME')
 
 
 ROOT_URLCONF = "code_runner_service.urls"
