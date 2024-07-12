@@ -7,4 +7,5 @@ pytest
 pytest-django
 pytest-celery
 boto3
- python-dotenv
+python-dotenv
+django-crontab

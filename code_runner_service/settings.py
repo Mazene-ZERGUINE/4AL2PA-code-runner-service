@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     'rest_framework',
     'api',
-    'django_celery_results'
+    'django_celery_results',
+    'django_crontab',
 ]
 
 MIDDLEWARE = [
@@ -87,6 +88,10 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "code_runner_service.wsgi.application"
+
+CRONJOBS = [
+    ('*/1 * * * *', 'code_runner_service.management.commands.cleanup')
+]
 
 
 # Database
