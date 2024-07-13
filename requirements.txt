@@ -9,3 +9,5 @@ pytest-celery
 boto3
 python-dotenv
 django-crontab
+psycopg2
+gunicorn

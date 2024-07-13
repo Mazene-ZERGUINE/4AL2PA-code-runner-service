@@ -14,26 +14,15 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 load_dotenv()
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DJANGO_DEBUG')
-
 ALLOWED_HOSTS = [
-    '127.0.0.1'
+    '127.0.0.1',
+    'localhost',
 ]
 
-
-# Application definition
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -59,16 +48,6 @@ MIDDLEWARE = [
 ]
 
 
-CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL')
-CELERY_RESULT_BACKEND = 'django-db'
-
-
-S3_BUCKET_NAME = os.getenv('S3_BUCKET_NAME')
-AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
-S3_REGION_NAME = os.getenv('S3_REGION_NAME')
-
-
 ROOT_URLCONF = "code_runner_service.urls"
 
 TEMPLATES = [
@@ -87,23 +66,30 @@ TEMPLATES = [
     },
 ]
 
+ENV = os.environ.get('ENV')
+
+if ENV == 'production':
+    from .env.production import *
+    from .env.production import DATABASES, CELERY_RESULT_BACKEND, CELERY_BROKER_URL
+
+    print('application is running on production environment')
+    print(f' database: ${DATABASES} ')
+    print(f'CELERY_BROKER_URL: {CELERY_BROKER_URL}')
+    print(f'CELERY_RESULT_BACKEND: {CELERY_RESULT_BACKEND}')
+else:
+    from .env.dev import *
+    from .env.dev import DATABASES, CELERY_RESULT_BACKEND, CELERY_BROKER_URL
+
+    print('application is running on development environment')
+    print(f' database: ${DATABASES} ')
+    print(f'CELERY_BROKER_URL: {CELERY_BROKER_URL}')
+    print(f'CELERY_RESULT_BACKEND: {CELERY_RESULT_BACKEND}')
+
 WSGI_APPLICATION = "code_runner_service.wsgi.application"
 
 CRONJOBS = [
     ('*/1 * * * *', 'code_runner_service.management.commands.cleanup')
 ]
-
-
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
