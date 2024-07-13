@@ -5,8 +5,6 @@ set -e  # Exit immediately if a command exits with a non-zero status.
 echo "Setting environment variables..."
 export ENV=production
 
-echo "Navigating to project directory..."
-cd /path/to/your/project
 
 echo "Checking if virtual environment exists..."
 if [ ! -d "./venv" ]; then
