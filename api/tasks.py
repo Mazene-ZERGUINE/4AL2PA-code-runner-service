@@ -78,7 +78,7 @@ def get_docker_run_command(language, container_path, unique_id):
     elif language == ProgramingLanguagesEnum.JAVASCRIPT.value:
         return common_args + ['code_runner:latest', 'node', container_path]
     elif language == ProgramingLanguagesEnum.PHP.value:
-        return common_args + ['code_runner:latest', 'php', '-r', f'require "{PHP_AUTOLOAD_PATH}"; include "{container_path}";']
+        return common_args + ['code_runner:latest', 'php', container_path]
     elif language == ProgramingLanguagesEnum.CPP.value:
         compiled_path = f'/app/resources/{language}/compiled_{unique_id}'
         compile_cmd = common_args + ['code_runner:latest', 'g++', container_path, '-o', compiled_path]
