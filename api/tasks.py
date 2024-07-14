@@ -55,16 +55,20 @@ def upload_file_to_s3(file_path, s3_bucket, s3_key):
 def run_docker_command(cmd):
     try:
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+        logger.info(f'Command executed successfully: {cmd}')
+        logger.info(f'stdout: {result.stdout}')
+        logger.info(f'stderr: {result.stderr}')
         return result
     except subprocess.TimeoutExpired as e:
-        logger.error(f'Execution time exceeded: {str(e)}')
+        logger.error(f'Execution time exceeded: {str(e)}, Command: {cmd}')
         return {'error': 'Execution time exceeded'}
     except subprocess.CalledProcessError as e:
-        logger.error(f'Subprocess error: {str(e)}')
+        logger.error(f'Subprocess error: {str(e)}, stdout: {e.stdout}, stderr: {e.stderr}')
         return {'error': str(e)}
     except Exception as e:
-        logger.error(f'Unexpected error: {str(e)}')
+        logger.error(f'Unexpected error: {str(e)}, Command: {cmd}')
         return {'error': 'Unexpected error occurred'}
+
 
 def get_docker_run_command(language, container_path, unique_id):
     common_args = [
