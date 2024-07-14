@@ -69,8 +69,9 @@ def run_docker_command(cmd):
 def get_docker_run_command(language, container_path, unique_id):
     common_args = [
         'docker', 'run', '--rm', '--cpus', '1.0', '--memory', '512m', '--memory-swap', '512m',
-        '--read-only', '--pids-limit', '100', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges',
-        '-v', f'{DIR_PATH}:/app/resources'
+        '--pids-limit', '100', '--cap-drop', 'ALL', '--security-opt', 'no-new-privileges',
+        '-v', f'{DIR_PATH}:/app/resources',
+        '-v', f'/tmp/docker_temp_{unique_id}:/tmp'  # Add this line to mount a writable temp directory
     ]
 
     if language == ProgramingLanguagesEnum.PYTHON.value:
@@ -90,6 +91,7 @@ def get_docker_run_command(language, container_path, unique_id):
     else:
         logger.error(f'Unsupported programming language: {language}')
         return None
+
 
 @shared_task
 def run_code(source_code, programming_language):
