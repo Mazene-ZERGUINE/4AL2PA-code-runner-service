@@ -22,7 +22,7 @@ python manage.py makemigrations
 python manage.py migrate
 
 echo "Starting Gunicorn service..."
-sudo systemctl start gunicorn
+sudo systemctl restart gunicorn
 sudo systemctl enable gunicorn
 
 echo "Django server started successfully"
