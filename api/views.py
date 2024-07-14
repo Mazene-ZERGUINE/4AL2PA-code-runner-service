@@ -28,6 +28,8 @@ class GetTaskResult(APIView):
     def get(self, request, task_id):
         result = AsyncResult(task_id)
         if result.ready():
+            if result.get().result.error:
+                return Response({'status': 'Pending'}, status=status.HTTP_200_OK)
             return Response({'status': 'Completed', 'result': result.get()}, status=status.HTTP_200_OK)
         else:
             return Response({'status': 'Pending'}, status=status.HTTP_200_OK)
