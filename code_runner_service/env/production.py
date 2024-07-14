@@ -1,5 +1,5 @@
 import os
-DEBUG = False
+DEBUG = True
 
 # production database connection configurations
 DATABASES = {
@@ -17,7 +17,7 @@ DATABASES = {
 # ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
 
 # celery production configurations replace with celery broker url
-CELERY_BROKER_URL = os.environ.get('DJANGO_CELERY_BROKER_URL')
+CELERY_BROKER_URL = 'amqps://esgithub:4AL2-PA-2024@b-083e498a-240b-4d98-b585-6fb241dcc8c8.mq.eu-west-3.amazonaws.com:5671'
 CELERY_RESULT_BACKEND = 'django-db'
 
 

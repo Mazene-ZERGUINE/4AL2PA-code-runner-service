@@ -34,5 +34,8 @@ WORKDIR /app
 ENV PATH="/app/node_modules/.bin:$PATH"
 ENV PHP_AUTOLOAD_PATH="/app/resources/php/vendor/autoload.php"
 
+RUN chmod -R 777 /app/resources
+RUN mkdir -p /app/temp && chmod -R 777 /app/temp
+
 # Set the default command
 CMD ["bash"]
